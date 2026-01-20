@@ -48,11 +48,11 @@ scraping + NLP + görselleştirme = tek tuşla veri analizi
 Tüm scraping + NLP + veri kalite sürecini çalıştırmak için:
 
 ```bash
-""python scheduler.py ""
+python scheduler.py
 ```
 
 ## Flask Dashboard:
 ```bash
 python app.py
 ```
-# Visit http://127.0.0.1:5000
+Visit http://127.0.0.1:5000
