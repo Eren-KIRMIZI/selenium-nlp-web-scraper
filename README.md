@@ -14,7 +14,6 @@ scraping + NLP + görselleştirme = tek tuşla veri analizi
 ## Screenshots
 
 <img width="1339" src="https://github.com/user-attachments/assets/903ee924-e42d-46dd-9217-b193f751402e" />
-<img width="1286" src="https://github.com/user-attachments/assets/e84bbd1c-e809-459c-8656-aaa3de13b9ad" />
 <img width="1339" src="https://github.com/user-attachments/assets/8d0e6490-73f7-4493-ae05-ba8d08fee6c4" />
 <img width="1315" src="https://github.com/user-attachments/assets/e64f0c01-3fa9-4875-935f-6de1c621ad31" />
 
