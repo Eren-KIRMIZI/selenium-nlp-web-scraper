@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Scraper Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>Smart Web Scraper Dashboard</h1>
+            <p class="subtitle">Selenium + NLP + Flask Powered</p>
+            <p class="timestamp" id="timestamp"></p>
+        </header>
+
+        <!-- Metrics Cards -->
+        <div class="metrics">
+            <div class="metric-card">
+                <div class="metric-value" id="total-quotes">-</div>
+                <div class="metric-label">Toplam Alıntı</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-value" id="unique-authors">-</div>
+                <div class="metric-label">Benzersiz Yazar</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-value" id="avg-word-count">-</div>
+                <div class="metric-label">Ort. Kelime Sayısı</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-value" id="avg-text-length">-</div>
+                <div class="metric-label">Ort. Karakter</div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts">
+            <!-- Top Authors Chart -->
+            <div class="chart-card">
+                <h2>En Çok Alıntı Yapılan Yazarlar</h2>
+                <div class="bar-chart" id="bar-chart">
+                    <p>Yükleniyor...</p>
+                </div>
+            </div>
+
+            <!-- Data Quality -->
+            <div class="chart-card">
+                <h2>Veri Kalitesi</h2>
+                <div class="quality-stats">
+                    <div class="quality-item">
+                        <span class="quality-label">Toplam Satır:</span>
+                        <span class="quality-value" id="rows-after">-</span>
+                    </div>
+                    <div class="quality-item">
+                        <span class="quality-label">Temizlenen:</span>
+                        <span class="quality-value warning" id="rows-removed">-</span>
+                    </div>
+                    <div class="quality-item">
+                        <span class="quality-label">Eksik Text:</span>
+                        <span class="quality-value" id="missing-text">-</span>
+                    </div>
+                    <div class="quality-item">
+                        <span class="quality-label">Duplicate:</span>
+                        <span class="quality-value" id="duplicates">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Quotes Table -->
+        <div class="table-card">
+            <h2>Son Alıntılar (İlk 10)</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Alıntı</th>
+                            <th>Yazar</th>
+                            <th>Kelime Sayısı</th>
+                            <th>Etiketler</th>
+                        </tr>
+                    </thead>
+                    <tbody id="quotes-table">
+                        <tr><td colspan="4">Yükleniyor...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p>Made with using Selenium + spaCy + Flask</p>
+            <div class="links">
+                <a href="/api/data" target="_blank">JSON API</a>
+                <a href="/api/report" target="_blank">Report API</a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // API'den veri çek ve sayfayı doldur
+        fetch('/api/stats')
+            .then(res => res.json())
+            .then(data => {
+                // Metrikler
+                document.getElementById('timestamp').textContent = 'Son Güncelleme: ' + data.timestamp;
+                document.getElementById('total-quotes').textContent = data.total_quotes;
+                document.getElementById('unique-authors').textContent = data.unique_authors;
+                document.getElementById('avg-word-count').textContent = data.avg_word_count;
+                document.getElementById('avg-text-length').textContent = data.avg_text_length;
+                
+                // Kalite metrikleri
+                document.getElementById('rows-after').textContent = data.rows_after;
+                document.getElementById('rows-removed').textContent = data.rows_removed;
+                document.getElementById('missing-text').textContent = data.missing_text;
+                document.getElementById('duplicates').textContent = data.duplicates;
+                
+                // Bar chart
+                let barHtml = '';
+                data.top_authors.forEach(item => {
+                    barHtml += `
+                        <div class="bar-item">
+                            <div class="bar-label">${item.author}</div>
+                            <div class="bar-container">
+                                <div class="bar-fill" style="width: ${item.percentage}%">
+                                    ${item.count}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                document.getElementById('bar-chart').innerHTML = barHtml;
+                
+                // Tablo
+                let tableHtml = '';
+                data.recent_quotes.forEach(quote => {
+                    tableHtml += `
+                        <tr>
+                            <td class="quote-text">${quote.text}</td>
+                            <td>${quote.author}</td>
+                            <td>${quote.word_count}</td>
+                            <td class="tags">${quote.tags}</td>
+                        </tr>
+                    `;
+                });
+                document.getElementById('quotes-table').innerHTML = tableHtml;
+            })
+            .catch(err => {
+                console.error('Hata:', err);
+                document.body.innerHTML = '<div style="text-align:center;padding:50px;"><h1>Veri yüklenemedi!</h1><p>Lütfen önce: <code>python scheduler.py</code></p></div>';
+            });
+    </script>
+</body>
+</html>
